@@ -76,7 +76,7 @@ define jenkins::plugin(
       cwd     => $plugin_dir,
       require => File[$plugin_dir],
       path    => ['/usr/bin', '/usr/sbin', '/bin'],
-      onlyif  => ["test -f ${name}.jpi", "test ! -f ${name}.jpi.pinned"],
+      onlyif  => "test -f ${name}.jpi -a ! -f ${name}.jpi.pinned",
       before  => Exec["download-${name}"],
     }
 
