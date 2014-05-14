@@ -9,8 +9,10 @@ describe 'jenkins::plugin' do
   it { should contain_user('jenkins').with('home' => '/var/lib/jenkins') }
 
   describe 'without version' do
+    let(:facts) { { :jenkins_plugins => '' } }
+
     it { should contain_exec('download-myplug').with(
-      :command      => 'rm -rf myplug myplug.* && wget --no-check-certificate http://updates.jenkins-ci.org/latest/myplug.hpi',
+      :command      => 'rm -rf myplug myplug.[hj]pi && wget --no-check-certificate http://updates.jenkins-ci.org/latest/myplug.hpi',
       :environment  => nil
     )}
     it { should contain_file('/var/lib/jenkins/plugins/myplug.hpi')}
@@ -18,9 +20,13 @@ describe 'jenkins::plugin' do
 
   describe 'with version' do
     let(:params) { { :version => '1.2.3' } }
+    let(:facts) { { :jenkins_plugins => '' } }
 
+    it { should contain_exec('create-pinnedfile-myplug').with(
+      :command      => 'touch /var/lib/jenkins/plugins/myplug.jpi.pinned'
+    )}
     it { should contain_exec('download-myplug').with(
-      :command      => 'rm -rf myplug myplug.* && wget --no-check-certificate http://updates.jenkins-ci.org/download/plugins/myplug/1.2.3/myplug.hpi',
+      :command      => 'rm -rf myplug myplug.[hj]pi && wget --no-check-certificate http://updates.jenkins-ci.org/download/plugins/myplug/1.2.3/myplug.hpi',
       :environment  => nil
     ) }
     it { should contain_file('/var/lib/jenkins/plugins/myplug.hpi')}
